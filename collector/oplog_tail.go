@@ -17,6 +17,12 @@ var (
 		Name:      "entry_count",
 		Help:      "The total number of entries observed in the oplog by ns/op",
 	}, []string{"ns", "op"})
+	oplogEntrySize = prometheus.NewCounterVec(prometheus.CounterOpts{
+		Namespace: Namespace,
+		Subsystem: "oplogtail",
+		Name:      "entry_size",
+		Help:      "The total size of entries observed in the oplog by ns/op",
+	}, []string{"ns", "op"})
 	oplogTailError = prometheus.NewCounter(prometheus.CounterOpts{
 		Namespace: Namespace,
 		Subsystem: "oplogtail",
@@ -56,6 +62,7 @@ func (o *OplogTailStats) Start(session *mgo.Session) {
 			glog.Errorf("Error getting entry from oplog: %v", err)
 		case op := <-ctx.OpC:
 			oplogEntryCount.WithLabelValues(op.Namespace, op.Operation).Add(1)
+			oplogEntrySize.WithLabelValues(op.Namespace, op.Operation).Add(float64(op.DataSize))
 		}
 	}
 }

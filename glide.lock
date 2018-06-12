@@ -1,10 +1,17 @@
-hash: 2daa265ce1037e5ac801ef074714e212b1ff69f2fea2e5c69a6c05ece9326f31
-updated: 2018-03-15T17:01:48.086832728-07:00
+hash: bef8401ee62260468eb95508a65009b9e7aadc076845eccc9c5a3e70a1818e76
+updated: 2018-06-12T15:16:19.541093562-07:00
 imports:
 - name: github.com/beorn7/perks
   version: 4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9
   subpackages:
   - quantile
+- name: github.com/globalsign/mgo
+  version: efe0945164a7e582241f37ae8983c075f8f2e870
+  subpackages:
+  - bson
+  - internal/json
+  - internal/sasl
+  - internal/scram
 - name: github.com/golang/glog
   version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
 - name: github.com/golang/protobuf
@@ -15,6 +22,8 @@ imports:
   version: c12348ce28de40eed0136aa2b644d0ee0650e56c
   subpackages:
   - pbutil
+- name: github.com/pkg/errors
+  version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: github.com/prometheus/client_golang
   version: c5b7fccd204277076155f10851dad72b76a49317
   subpackages:
@@ -34,7 +43,7 @@ imports:
   subpackages:
   - xfs
 - name: github.com/rwynn/gtm
-  version: 495abc277593067479c3c528864191804ab04cf7
+  version: f9c94ec186c76ebea3bb09e9da8224b51deba0a1
   repo: https://github.com/jacksontj/gtm.git
 - name: github.com/serialx/hashring
   version: 6a9381c5a83e926b9f1fd907395a581e69747e96
