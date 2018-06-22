@@ -70,12 +70,14 @@ func (o *OplogTailStats) Start(session *mgo.Session) {
 // Export exports metrics to Prometheus
 func (status *OplogTailStats) Export(ch chan<- prometheus.Metric) {
 	oplogEntryCount.Collect(ch)
+	oplogEntrySize.Collect(ch)
 	oplogTailError.Collect(ch)
 }
 
 // Describe describes metrics collected
 func (status *OplogTailStats) Describe(ch chan<- *prometheus.Desc) {
 	oplogEntryCount.Describe(ch)
+	oplogEntrySize.Describe(ch)
 	oplogTailError.Describe(ch)
 }
 
