@@ -2,6 +2,7 @@ package collector
 
 import (
 	"sync"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -33,7 +34,7 @@ func (stats *ReplicaSetStats) Export(replicaSet string, ch chan<- prometheus.Met
 	defer connPoolReplicaSetStatsLock.Unlock()
 
 	for _, rsHostStat := range stats.Hosts {
-		pingTime.WithLabelValues(rsHostStat.Host, replicaSet).Set(rsHostStat.PingTime * (time.Millisecond / time.Second))
+		pingTime.WithLabelValues(rsHostStat.Host, replicaSet).Set(rsHostStat.PingTime * float64(time.Millisecond/time.Second))
 		pingTime.Collect(ch)
 		pingTime.Reset()
 	}
