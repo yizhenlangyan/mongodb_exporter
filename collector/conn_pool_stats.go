@@ -53,9 +53,8 @@ type ConnPoolStats struct {
 	TotalAvailable        float64 `bson:"totalAvailable"`
 	TotalCreated          float64 `bson:"totalCreated"`
 
-	Hosts map[string]*HostConnPoolStats `bson:hosts"`
-	// TODO:? not sure if *this* level of granularity is helpful
-	//ReplicaSets map[string]ConnPoolReplicaSetStats `bson:"replicaSets"`
+	Hosts       map[string]*HostConnPoolStats `bson:hosts"`
+	ReplicaSets map[string]ReplicaSetStats    `bson:"replicaSets"`
 }
 
 // Export exports the server status to be consumed by prometheus.
@@ -77,6 +76,9 @@ func (stats *ConnPoolStats) Export(ch chan<- prometheus.Metric) {
 
 	for hostname, hostStat := range stats.Hosts {
 		hostStat.Export(hostname, ch)
+	}
+	for replicaSet, replicaStat := range stats.ReplicaSets {
+		replicaStat.Export(replicaSet, ch)
 	}
 }
 
