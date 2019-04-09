@@ -9,7 +9,7 @@ test:
 	@rm *.out
 
 deps:
-	glide install
+	dep ensure
 
 build: deps
 	CGO_ENABLED=0 go build mongodb_exporter.go
