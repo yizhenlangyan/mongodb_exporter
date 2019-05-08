@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/dcu/mongodb_exporter/collector"
 	"github.com/dcu/mongodb_exporter/shared"
@@ -60,6 +61,7 @@ var (
 	mongodbCollectParameterMetrics      = flag.Bool("mongodb.collect.parameter", true, "Collect MongoDB parameter metrics")
 	mongodbCollectParameters            = flag.String("mongodb.collect.parameter.parameters", "cursorTimeoutMillis", "Comma-separated list of setParameters to collect values for")
 	mongodbSocketTimeout                = flag.Duration("mongodb.socket-timeout", 0, "timeout for socket operations to mongodb")
+	mongodbMaxTimeMS                    = flag.Duration("mongodb.maxtimems", 0, "maxTimeMs set for blocking database commands")
 	version                             = flag.Bool("version", false, "Print mongodb_exporter version")
 )
 
@@ -168,6 +170,7 @@ func registerCollector() {
 		UserName:                 *mongodbUserName,
 		AuthMechanism:            *mongodbAuthMechanism,
 		SocketTimeout:            *mongodbSocketTimeout,
+		MaxTimeMS:                int64(*mongodbMaxTimeMS / time.Millisecond),
 	})
 	prometheus.MustRegister(mongodbCollector)
 }

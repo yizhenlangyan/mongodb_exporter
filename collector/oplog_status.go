@@ -85,9 +85,9 @@ func GetOplogTimestamp(session *mgo.Session, returnTail bool) (float64, error) {
 }
 
 // GetOplogCollectionStats fetches oplog collection stats
-func GetOplogCollectionStats(session *mgo.Session) (*OplogCollectionStats, error) {
+func GetOplogCollectionStats(session *mgo.Session, maxTimeMS int64) (*OplogCollectionStats, error) {
 	results := &OplogCollectionStats{}
-	err := session.DB("local").Run(bson.M{"collStats": "oplog.rs"}, &results)
+	err := session.DB("local").Run(bson.M{"collStats": "oplog.rs", "maxTimeMS": maxTimeMS}, &results)
 	return results, err
 }
 
@@ -120,9 +120,9 @@ func (status *OplogStatus) Describe(ch chan<- *prometheus.Desc) {
 }
 
 // GetOplogStatus fetches oplog collection stats
-func GetOplogStatus(session *mgo.Session) *OplogStatus {
+func GetOplogStatus(session *mgo.Session, maxTimeMS int64) *OplogStatus {
 	oplogStatus := &OplogStatus{}
-	collectionStats, err := GetOplogCollectionStats(session)
+	collectionStats, err := GetOplogCollectionStats(session, maxTimeMS)
 	if err != nil {
 		glog.Error("Failed to get local.oplog_rs collection stats.")
 		return nil

@@ -46,6 +46,7 @@ type MongodbCollectorOpts struct {
 	UserName                 string
 	AuthMechanism            string
 	SocketTimeout            time.Duration
+	MaxTimeMS                int64
 }
 
 func (in MongodbCollectorOpts) toSessionOps() shared.MongoSessionOpts {
@@ -152,7 +153,7 @@ func (exporter *MongodbCollector) Collect(ch chan<- prometheus.Metric) {
 }
 
 func (exporter *MongodbCollector) collectServerStatus(session *mgo.Session, ch chan<- prometheus.Metric) *ServerStatus {
-	serverStatus := GetServerStatus(session)
+	serverStatus := GetServerStatus(session, exporter.Opts.MaxTimeMS)
 	if serverStatus != nil {
 		glog.Info("exporting ServerStatus Metrics")
 		serverStatus.Export(ch)
@@ -194,7 +195,7 @@ func (exporter *MongodbCollector) collectReplSetConf(session *mgo.Session, ch ch
 }
 
 func (exporter *MongodbCollector) collectOplogStatus(session *mgo.Session, ch chan<- prometheus.Metric) *OplogStatus {
-	oplogStatus := GetOplogStatus(session)
+	oplogStatus := GetOplogStatus(session, exporter.Opts.MaxTimeMS)
 
 	if oplogStatus != nil {
 		glog.Info("exporting OplogStatus Metrics")
@@ -234,7 +235,7 @@ func (exporter *MongodbCollector) collectDatabaseStatus(session *mgo.Session, ch
 		if db == "admin" || db == "test" {
 			continue
 		}
-		dbStatus := GetDatabaseStatus(session, db)
+		dbStatus := GetDatabaseStatus(session, db, exporter.Opts.MaxTimeMS)
 		if dbStatus != nil {
 			glog.Infof("exporting Database Metrics for db=%q", dbStatus.Name)
 			dbStatus.Export(ch)
@@ -252,7 +253,7 @@ func (exporter *MongodbCollector) collectCollectionStatus(session *mgo.Session, 
 		if db == "admin" || db == "test" {
 			continue
 		}
-		CollectCollectionStatus(session, db, ch)
+		CollectCollectionStatus(session, db, ch, exporter.Opts.MaxTimeMS)
 	}
 }
 
