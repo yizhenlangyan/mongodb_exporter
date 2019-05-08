@@ -203,9 +203,9 @@ func (status *ServerStatus) Describe(ch chan<- *prometheus.Desc) {
 }
 
 // GetServerStatus returns the server status info.
-func GetServerStatus(session *mgo.Session) *ServerStatus {
+func GetServerStatus(session *mgo.Session, maxTimeMS int64) *ServerStatus {
 	result := &ServerStatus{}
-	err := session.DB("admin").Run(bson.D{{"serverStatus", 1}, {"recordStats", 0}}, result)
+	err := session.DB("admin").Run(bson.D{{"serverStatus", 1}, {"recordStats", 0}, {"maxTimeMS", maxTimeMS}}, result)
 	if err != nil {
 		glog.Error("Failed to get server status.")
 		return nil

@@ -112,9 +112,9 @@ func (dbStatus *DatabaseStatus) Describe(ch chan<- *prometheus.Desc) {
 }
 
 // GetDatabaseStatus returns stats for a given database
-func GetDatabaseStatus(session *mgo.Session, db string) *DatabaseStatus {
+func GetDatabaseStatus(session *mgo.Session, db string, maxTimeMS int64) *DatabaseStatus {
 	var dbStatus DatabaseStatus
-	err := session.DB(db).Run(bson.D{{"dbStats", 1}, {"scale", 1}}, &dbStatus)
+	err := session.DB(db).Run(bson.D{{"dbStats", 1}, {"scale", 1}, {"maxTimeMS", maxTimeMS}}, &dbStatus)
 	if err != nil {
 		glog.Error(err)
 		return nil
