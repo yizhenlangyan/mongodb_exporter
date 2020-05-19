@@ -349,7 +349,9 @@ func (replStats *ReplStats) Export(ch chan<- prometheus.Metric) {
 	replStats.Apply.Export(ch)
 	replStats.Buffer.Export(ch)
 	replStats.Network.Export(ch)
-	replStats.PreloadStats.Export(ch)
+	if replStats.PreloadStats != nil {
+		replStats.PreloadStats.Export(ch)
+	}
 }
 
 // PreloadStats are the stats associated with preload operation.
