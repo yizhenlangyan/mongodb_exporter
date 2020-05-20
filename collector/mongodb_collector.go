@@ -78,6 +78,7 @@ func NewMongodbCollector(opts MongodbCollectorOpts) *MongodbCollector {
 
 // Describe describes all mongodb's metrics.
 func (exporter *MongodbCollector) Describe(ch chan<- *prometheus.Desc) {
+	(&CurrentOp{}).Describe(ch)
 	(&ServerStatus{}).Describe(ch)
 	(&ReplSetStatus{}).Describe(ch)
 	(&ReplSetConf{}).Describe(ch)
@@ -98,6 +99,8 @@ func (exporter *MongodbCollector) Collect(ch chan<- prometheus.Metric) {
 		upGauge.Reset()
 		collectorLock.Unlock()
 		defer mongoSess.Close()
+		glog.Info("Collecting CurrentOp Info")
+		exporter.collectCurrentOp(mongoSess, ch)
 		glog.Info("Collecting Server Status")
 		exporter.collectServerStatus(mongoSess, ch)
 		if exporter.Opts.CollectReplSet {
@@ -150,6 +153,15 @@ func (exporter *MongodbCollector) Collect(ch chan<- prometheus.Metric) {
 		upGauge.Reset()
 		collectorLock.Unlock()
 	}
+}
+
+func (exporter *MongodbCollector) collectCurrentOp(session *mgo.Session, ch chan<- prometheus.Metric) *CurrentOp {
+	currentOpInfo := GetCurrentOp(session, exporter.Opts.MaxTimeMS)
+	if currentOpInfo != nil {
+		glog.Info("exporting CurrentOp Metrics")
+		currentOpInfo.Export(ch)
+	}
+	return currentOpInfo
 }
 
 func (exporter *MongodbCollector) collectServerStatus(session *mgo.Session, ch chan<- prometheus.Metric) *ServerStatus {
