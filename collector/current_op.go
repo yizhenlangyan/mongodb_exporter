@@ -39,7 +39,7 @@ func (status *CurrentOp) Describe(ch chan<- *prometheus.Desc) {
 // GetCurrentOp returns the current operation info.
 func GetCurrentOp(session *mgo.Session, maxTimeMS int64) *CurrentOp {
 	result := &CurrentOp{}
-	err := session.DB("admin").Run(bson.D{{"currentOp", 1}, {"inprog", 0}, {"info", 0}, {"ok", 0}}, result)
+	err := session.DB("admin").Run(bson.D{{"currentOp", 1}, {"notexist", 0}}, result)
 	if err != nil {
 		glog.Error("Failed to get currentOp status.")
 		return nil
