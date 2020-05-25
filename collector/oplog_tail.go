@@ -48,6 +48,11 @@ func (o *OplogTailStats) Start(session *mgo.Session) {
     // which are the entries with `fromMigrate`
 	opts := gtm.DefaultOptions()
 	opts.IncludeMigrate = true
+	// If the mongoD has not joined a replicaSet, gtm.Start will crash when it
+	// try to get the oplog collection name. Setting the name here will prevent that.
+	// newer version of gtm fixed this and it always use 'oplog.rs'.
+	oplogName := "oplog.rs"
+	opts.OpLogCollectionName = &oplogName
 
 	ctx := gtm.Start(session, opts)
 	defer ctx.Stop()
