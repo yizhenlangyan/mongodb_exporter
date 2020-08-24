@@ -1,5 +1,12 @@
 # Mongodb Exporter
 
+## To release a new version
+  create a new release here: https://github.com/wish/mongodb_exporter/releases, then a new binary will be automatically build in https://quay.io/repository/wish/mongodb_exporter. 
+## To deploy a new version, there are multiple places where version need to be updated. 
+  - mongos : in the k8s repo, /apps/mongos/mongos.jsonnet, you will want to start with staging first.
+  - mongod in k8s: in the k8s repo, /apps/mongod/mongod.jsonnet.
+  - mongod in colo: upload the new binary to the salt-roots-blob repo, then in the salt-roots repo, update pillar_roots/mongodb/init.sls. unlike k8s changes, such salt changes can't automatically go out, so you need to run salt on each mongod hosts. There are tools to make that easier.
+
 MongoDB exporter for prometheus.io, written in go.
 
 ![screenshot](https://raw.githubusercontent.com/dcu/mongodb_exporter/321189c90831d5ad5a8c6fb04925a335b37f51b8/screenshots/mongodb-dashboard-1.png)
