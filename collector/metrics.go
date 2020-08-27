@@ -210,11 +210,25 @@ var (
 		Name:      "deleted_documents_total",
 		Help:      "deletedDocuments reports the total number of documents deleted from collections with a ttl index.",
 	})
-	metricsTTLPassesTotal = prometheus.NewCounter(prometheus.CounterOpts{
+	metricsTTLPassesTotal = prometheus.NewGauge(prometheus.GaugeOpts{
 		Namespace: Namespace,
 		Subsystem: "metrics_ttl",
 		Name:      "passes_total",
 		Help:      "passes reports the number of times the background process removes documents from collections with a ttl index",
+	})
+)
+var (
+	metricsQueryPlanCacheTotalSizeEstimateBytes = prometheus.NewGauge(prometheus.GaugeOpts{
+		Namespace: Namespace,
+		Subsystem: "metrics_query",
+		Name:      "plan_cache_total_size_estimate_bytes",
+		Help:      "planCacheTotalSizeEstimateBytes reports the estimated size of plan cache in bytes.",
+	})
+	metricsQueryUpdateOneOpStyleBroadcastWithExactIDCount = prometheus.NewGauge(prometheus.GaugeOpts{
+		Namespace: Namespace,
+		Subsystem: "metrics_query",
+		Name:      "update_broadcast_with_exact_ID_count",
+		Help:      "updateOneOpStyleBroadcastWithExactIDCount Tracks the number of {multi:false} updates with an exact match on _id that are broadcasted to multiple shards.",
 	})
 )
 
@@ -404,6 +418,30 @@ func (cursorStats *CursorStats) Export(ch chan<- prometheus.Metric) {
 	metricsCursorOpen.WithLabelValues("total").Set(cursorStats.Open.Total)
 }
 
+// TTLStats are the stats with a ttl index
+type TTLStats struct {
+	DeletedDocuments float64          `bson:"deletedDocuments"`
+	Passes          float64           `bson:"passes"`
+}
+
+// Export exports the ttl stats.
+func (ttlStats *TTLStats) Export(ch chan<- prometheus.Metric) {
+	metricsTTLDeletedDocumentsTotal.Set(ttlStats.DeletedDocuments)
+	metricsTTLPassesTotal.Set(ttlStats.Passes)
+}
+
+// QueryStats are the stats with a ttl index
+type QueryStats struct {
+	PlanCacheSize   float64          `bson:"planCacheTotalSizeEstimateBytes"`
+	UpdateCount     float64          `bson:"updateOneOpStyleBroadcastWithExactIDCount"`
+}
+
+// Export exports the query stats.
+func (queryStats *QueryStats) Export(ch chan<- prometheus.Metric) {
+	metricsQueryPlanCacheTotalSizeEstimateBytes.Set(queryStats.PlanCacheSize)
+	metricsQueryUpdateOneOpStyleBroadcastWithExactIDCount.Set(queryStats.UpdateCount)
+}
+
 // MetricsStats are all stats associated with metrics of the system
 type MetricsStats struct {
 	Document      *DocumentStats      `bson:"document"`
@@ -414,6 +452,8 @@ type MetricsStats struct {
 	Repl          *ReplStats          `bson:"repl"`
 	Storage       *StorageStats       `bson:"storage"`
 	Cursor        *CursorStats        `bson:"cursor"`
+	TTL           *TTLStats           `bson:"ttl"`
+	Query         *QueryStats         `bson:"query"`
 }
 
 // Export exports the metrics stats.
@@ -441,6 +481,12 @@ func (metricsStats *MetricsStats) Export(ch chan<- prometheus.Metric) {
 	}
 	if metricsStats.Cursor != nil {
 		metricsStats.Cursor.Export(ch)
+	}
+	if metricsStats.TTL != nil {
+		metricsStats.TTL.Export(ch)
+	}
+	if metricsStats.Query != nil {
+		metricsStats.Query.Export(ch)
 	}
 
 	metricsCursorTimedOutTotal.Collect(ch)
@@ -473,6 +519,7 @@ func (metricsStats *MetricsStats) Export(ch chan<- prometheus.Metric) {
 	metricsStorageFreelistSearchTotal.Collect(ch)
 	metricsTTLDeletedDocumentsTotal.Collect(ch)
 	metricsTTLPassesTotal.Collect(ch)
+	metricsQueryPlanCacheTotalSizeEstimateBytes.Collect(ch)
 }
 
 // Describe describes the metrics for prometheus
@@ -507,4 +554,5 @@ func (metricsStats *MetricsStats) Describe(ch chan<- *prometheus.Desc) {
 	metricsStorageFreelistSearchTotal.Describe(ch)
 	metricsTTLDeletedDocumentsTotal.Describe(ch)
 	metricsTTLPassesTotal.Describe(ch)
+	metricsQueryPlanCacheTotalSizeEstimateBytes.Describe(ch)
 }
