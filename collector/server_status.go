@@ -46,6 +46,8 @@ type ServerStatus struct {
 
 	ExtraInfo *ExtraInfo `bson:"extra_info"`
 
+	SessionCache *SessionCacheStats `bson:"logicalSessionRecordCache"`
+
 	GlobalLock *GlobalLockStats `bson:"globalLock"`
 
 	IndexCounter *IndexCounterStats `bson:"indexCounters"`
@@ -92,6 +94,9 @@ func (status *ServerStatus) Export(ch chan<- prometheus.Metric) {
 	if status.ExtraInfo != nil {
 		status.ExtraInfo.Export(ch)
 	}
+	if status.SessionCache != nil {
+		status.SessionCache.Export(ch)
+	}
 	if status.GlobalLock != nil {
 		status.GlobalLock.Export(ch)
 	}
@@ -128,7 +133,6 @@ func (status *ServerStatus) Export(ch chan<- prometheus.Metric) {
 	if status.ShardingStatistics != nil {
 		status.ShardingStatistics.Export(ch)
 	}
-
 	if status.WiredTiger != nil {
 		status.WiredTiger.Export(ch)
 	}
@@ -164,6 +168,9 @@ func (status *ServerStatus) Describe(ch chan<- *prometheus.Desc) {
 	}
 	if status.ExtraInfo != nil {
 		status.ExtraInfo.Describe(ch)
+	}
+	if status.SessionCache != nil {
+		status.SessionCache.Describe(ch)
 	}
 	if status.GlobalLock != nil {
 		status.GlobalLock.Describe(ch)
