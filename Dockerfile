@@ -2,7 +2,7 @@ FROM       golang:alpine as builder
 
 RUN apk --no-cache add curl git make perl
 COPY . /go/src/github.com/dcu/mongodb_exporter
-RUN cd /go/src/github.com/dcu/mongodb_exporter && GOPATH=/go make release
+RUN cd /go/src/github.com/dcu/mongodb_exporter && make release
 
 FROM       alpine:3.4
 MAINTAINER David Cuadrado <dacuad@facebook.com>
