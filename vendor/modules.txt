@@ -1,0 +1,54 @@
+# github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973
+## explicit
+github.com/beorn7/perks/quantile
+# github.com/cespare/xxhash v1.1.0
+## explicit
+github.com/cespare/xxhash
+# github.com/globalsign/mgo v0.0.0-20190408092501-909ae7ce1a7b
+## explicit
+github.com/globalsign/mgo
+github.com/globalsign/mgo/bson
+github.com/globalsign/mgo/internal/json
+github.com/globalsign/mgo/internal/sasl
+github.com/globalsign/mgo/internal/scram
+# github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+## explicit
+github.com/golang/glog
+# github.com/golang/protobuf v1.2.0
+## explicit
+github.com/golang/protobuf/proto
+# github.com/matttproud/golang_protobuf_extensions v1.0.1
+## explicit
+github.com/matttproud/golang_protobuf_extensions/pbutil
+# github.com/pkg/errors v0.8.1-0.20180311214515-816c9085562c
+## explicit
+github.com/pkg/errors
+# github.com/prometheus/client_golang v0.8.0
+## explicit
+github.com/prometheus/client_golang/prometheus
+# github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910
+## explicit
+github.com/prometheus/client_model/go
+# github.com/prometheus/common v0.0.0-20180801064454-c7de2306084e
+## explicit
+github.com/prometheus/common/expfmt
+github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg
+github.com/prometheus/common/model
+# github.com/prometheus/procfs v0.0.0-20180725123919-05ee40e3a273
+## explicit
+github.com/prometheus/procfs
+github.com/prometheus/procfs/internal/util
+github.com/prometheus/procfs/nfs
+github.com/prometheus/procfs/xfs
+# github.com/prometheus/prometheus v2.4.3-0.20181002125257-6932030aa1fd+incompatible
+## explicit
+github.com/prometheus/prometheus/pkg/labels
+# github.com/rwynn/gtm v0.0.0-20181025170138-ff28f9494a23 => github.com/jacksontj/gtm v0.0.0-20181025170138-ff28f9494a23
+## explicit
+github.com/rwynn/gtm
+# github.com/serialx/hashring v0.0.0-20180504054112-49a4782e9908
+## explicit
+github.com/serialx/hashring
+# golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
+## explicit
+# github.com/rwynn/gtm => github.com/jacksontj/gtm v0.0.0-20181025170138-ff28f9494a23

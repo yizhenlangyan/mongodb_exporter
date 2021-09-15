@@ -2,7 +2,6 @@
 *.o
 *.a
 *.so
-*.out
 
 # Folders
 _obj
@@ -23,8 +22,3 @@ _testmain.go
 *.exe
 *.test
 *.prof
-*.swp
-.DS_Store
-
-mongodb_exporter
-release/
