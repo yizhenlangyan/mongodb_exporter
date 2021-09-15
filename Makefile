@@ -8,13 +8,10 @@ test:
 	go tool cover -func=shared_coverage.out
 	@rm *.out
 
-deps:
-	dep ensure
-
 build: deps
 	CGO_ENABLED=0 go build mongodb_exporter.go
 
-release: deps
+release:
 	mkdir -p release
 	perl -p -i -e 's/\{\{VERSION\}\}/$(TAG)/g' mongodb_exporter.go
 	GOOS=darwin GOARCH=amd64 go build -o release/mongodb_exporter-darwin-amd64 $(package)
