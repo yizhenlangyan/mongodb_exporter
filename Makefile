@@ -8,7 +8,7 @@ test:
 	go tool cover -func=shared_coverage.out
 	@rm *.out
 
-build: deps
+build:
 	GO111MODULE=off CGO_ENABLED=0 go build mongodb_exporter.go
 
 release:
