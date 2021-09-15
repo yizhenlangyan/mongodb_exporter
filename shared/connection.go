@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/golang/glog"
 	"github.com/globalsign/mgo"
+	"github.com/golang/glog"
 )
 
 const (
@@ -24,6 +24,7 @@ type MongoSessionOpts struct {
 	TLSPrivateKeyFile     string
 	TLSCaFile             string
 	TLSHostnameValidation bool
+	TLSAuth               bool
 	UserName              string
 	AuthMechanism         string
 	SocketTimeout         time.Duration
@@ -43,7 +44,7 @@ func MongoSession(opts MongoSessionOpts) *mgo.Session {
 		dialInfo.Username = opts.UserName
 	}
 
-	err = opts.configureDialInfoIfRequired(dialInfo)
+	cred, err := opts.configureDialInfoIfRequired(dialInfo)
 	if err != nil {
 		glog.Errorf("%s", err)
 		return nil
@@ -54,29 +55,37 @@ func MongoSession(opts MongoSessionOpts) *mgo.Session {
 		glog.Errorf("Cannot connect to server using url %s: %s", opts.URI, err)
 		return nil
 	}
+
+	if cred != nil {
+		if err := session.Login(cred); err != nil {
+			glog.Errorf("Cannot login to server using TLS credential: %s", err)
+			return nil
+		}
+	}
+
 	session.SetMode(mgo.Eventual, true)
 	session.SetSyncTimeout(syncMongodbTimeout)
 	session.SetSocketTimeout(opts.SocketTimeout)
 	return session
 }
 
-func (opts MongoSessionOpts) configureDialInfoIfRequired(dialInfo *mgo.DialInfo) error {
+func (opts MongoSessionOpts) configureDialInfoIfRequired(dialInfo *mgo.DialInfo) (*mgo.Credential, error) {
 	if opts.AuthMechanism != "" {
 		dialInfo.Mechanism = opts.AuthMechanism
 	}
 	if len(opts.TLSCertificateFile) > 0 {
-		certificates, err := LoadKeyPairFrom(opts.TLSCertificateFile, opts.TLSPrivateKeyFile)
+		certificate, err := LoadKeyPairFrom(opts.TLSCertificateFile, opts.TLSPrivateKeyFile)
 		if err != nil {
-			return fmt.Errorf("Cannot load key pair from '%s' and '%s' to connect to server '%s'. Got: %v", opts.TLSCertificateFile, opts.TLSPrivateKeyFile, opts.URI, err)
+			return nil, fmt.Errorf("Cannot load key pair from '%s' and '%s' to connect to server '%s'. Got: %v", opts.TLSCertificateFile, opts.TLSPrivateKeyFile, opts.URI, err)
 		}
 		config := &tls.Config{
-			Certificates:       []tls.Certificate{certificates},
+			Certificates:       []tls.Certificate{certificate},
 			InsecureSkipVerify: !opts.TLSHostnameValidation,
 		}
 		if len(opts.TLSCaFile) > 0 {
 			ca, err := LoadCertificatesFrom(opts.TLSCaFile)
 			if err != nil {
-				return fmt.Errorf("Couldn't load client CAs from %s. Got: %s", opts.TLSCaFile, err)
+				return nil, fmt.Errorf("Couldn't load client CAs from %s. Got: %s", opts.TLSCaFile, err)
 			}
 			config.RootCAs = ca
 		}
@@ -94,8 +103,17 @@ func (opts MongoSessionOpts) configureDialInfoIfRequired(dialInfo *mgo.DialInfo)
 			}
 			return conn, err
 		}
+
+		if opts.TLSAuth {
+			// Authenticate using the certificate
+			c, err := x509.ParseCertificate(certificate.Certificate[0]) // TODO: what if multiple
+			if err != nil {
+				return nil, err
+			}
+			return &mgo.Credential{Certificate: c, Source: "$external"}, nil
+		}
 	}
-	return nil
+	return nil, nil
 }
 
 func enrichWithOwnChecks(conn *tls.Conn, tlsConfig *tls.Config) error {

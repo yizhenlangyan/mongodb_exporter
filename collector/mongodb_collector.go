@@ -33,6 +33,7 @@ type MongodbCollectorOpts struct {
 	TLSPrivateKeyFile        string
 	TLSCaFile                string
 	TLSHostnameValidation    bool
+	TLSAuth                  bool
 	CollectReplSet           bool
 	CollectOplog             bool
 	TailOplog                bool
@@ -56,6 +57,7 @@ func (in MongodbCollectorOpts) toSessionOps() shared.MongoSessionOpts {
 		TLSPrivateKeyFile:     in.TLSPrivateKeyFile,
 		TLSCaFile:             in.TLSCaFile,
 		TLSHostnameValidation: in.TLSHostnameValidation,
+		TLSAuth:               in.TLSAuth,
 		UserName:              in.UserName,
 		AuthMechanism:         in.AuthMechanism,
 		SocketTimeout:         in.SocketTimeout,
