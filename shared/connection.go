@@ -56,6 +56,10 @@ func MongoSession(opts MongoSessionOpts) *mgo.Session {
 		return nil
 	}
 
+	// For direct connection, we need to set mode to be Monotonic (similar to SecondaryPreferred) or
+	// Eventual (similar to Nearest) before login. Otherwise, mongo exporter can not log in secondary mongod.
+	session.SetMode(mgo.Eventual, true)
+
 	if cred != nil {
 		if err := session.Login(cred); err != nil {
 			glog.Errorf("Cannot login to server using TLS credential: %s", err)
@@ -63,7 +67,6 @@ func MongoSession(opts MongoSessionOpts) *mgo.Session {
 		}
 	}
 
-	session.SetMode(mgo.Eventual, true)
 	session.SetSyncTimeout(syncMongodbTimeout)
 	session.SetSocketTimeout(opts.SocketTimeout)
 	return session
