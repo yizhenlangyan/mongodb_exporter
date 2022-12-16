@@ -312,10 +312,12 @@ type ApplyStats struct {
 
 // Export exports the apply stats
 func (applyStats *ApplyStats) Export(ch chan<- prometheus.Metric) {
-	metricsReplApplyOpsTotal.Set(applyStats.Ops)
+	if applyStats != nil {
+		metricsReplApplyOpsTotal.Set(applyStats.Ops)
 
-	metricsReplApplyBatchesNumTotal.Set(applyStats.Batches.Num)
-	metricsReplApplyBatchesTotalMilliseconds.Set(applyStats.Batches.TotalMillis)
+		metricsReplApplyBatchesNumTotal.Set(applyStats.Batches.Num)
+		metricsReplApplyBatchesTotalMilliseconds.Set(applyStats.Batches.TotalMillis)
+	}
 }
 
 // BufferStats are the stats associated with the buffer
@@ -360,11 +362,13 @@ type ReplStats struct {
 
 // Export exposes the replication stats.
 func (replStats *ReplStats) Export(ch chan<- prometheus.Metric) {
-	replStats.Apply.Export(ch)
-	replStats.Buffer.Export(ch)
-	replStats.Network.Export(ch)
-	if replStats.PreloadStats != nil {
-		replStats.PreloadStats.Export(ch)
+	if replStats != nil {
+		replStats.Apply.Export(ch)
+		replStats.Buffer.Export(ch)
+		replStats.Network.Export(ch)
+		if replStats.PreloadStats != nil {
+			replStats.PreloadStats.Export(ch)
+		}
 	}
 }
 
