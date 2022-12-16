@@ -348,8 +348,10 @@ func (metricsNetworkStats *MetricsNetworkStats) Export(ch chan<- prometheus.Metr
 	metricsReplNetworkOpsTotal.Set(metricsNetworkStats.Ops)
 	metricsReplNetworkReadersCreatedTotal.Set(metricsNetworkStats.ReadersCreated)
 
-	metricsReplNetworkGetmoresNumTotal.Set(metricsNetworkStats.GetMores.Num)
-	metricsReplNetworkGetmoresTotalMilliseconds.Set(metricsNetworkStats.GetMores.TotalMillis)
+	if metricsNetworkStats.GetMores != nil {
+		metricsReplNetworkGetmoresNumTotal.Set(metricsNetworkStats.GetMores.Num)
+		metricsReplNetworkGetmoresTotalMilliseconds.Set(metricsNetworkStats.GetMores.TotalMillis)
+	}
 }
 
 // ReplStats are the stats associated with the replication process.
@@ -386,11 +388,15 @@ type PreloadStats struct {
 
 // Export exposes the preload stats.
 func (preloadStats *PreloadStats) Export(ch chan<- prometheus.Metric) {
-	metricsReplPreloadDocsNumTotal.Set(preloadStats.Docs.Num)
-	metricsReplPreloadDocsTotalMilliseconds.Set(preloadStats.Docs.TotalMillis)
+	if preloadStats.Docs != nil {
+		metricsReplPreloadDocsNumTotal.Set(preloadStats.Docs.Num)
+		metricsReplPreloadDocsTotalMilliseconds.Set(preloadStats.Docs.TotalMillis)
+	}
 
-	metricsReplPreloadIndexesNumTotal.Set(preloadStats.Indexes.Num)
-	metricsReplPreloadIndexesTotalMilliseconds.Set(preloadStats.Indexes.TotalMillis)
+	if preloadStats.Indexes != nil {
+		metricsReplPreloadIndexesNumTotal.Set(preloadStats.Indexes.Num)
+		metricsReplPreloadIndexesTotalMilliseconds.Set(preloadStats.Indexes.TotalMillis)
+	}
 }
 
 // StorageStats are the stats associated with the storage.
