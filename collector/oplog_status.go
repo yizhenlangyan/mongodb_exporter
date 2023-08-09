@@ -87,7 +87,7 @@ func GetOplogTimestamp(session *mgo.Session, returnTail bool) (float64, error) {
 // GetOplogCollectionStats fetches oplog collection stats
 func GetOplogCollectionStats(session *mgo.Session, maxTimeMS int64) (*OplogCollectionStats, error) {
 	results := &OplogCollectionStats{}
-	err := session.DB("local").Run(bson.M{"collStats": "oplog.rs", "maxTimeMS": maxTimeMS}, &results)
+	err := session.DB("local").Run(bson.M{"collStats": "oplog.rs"}, &results)
 	return results, err
 }
 
